@@ -98,6 +98,28 @@
 
               </ul>
             </li>
+
+            <!-- Products -->
+            <li class="menu-item">
+              <a href="javascript:void(0);" class="menu-link menu-toggle">
+                <i class="menu-icon tf-icons bx bx-package"></i>
+                <div data-i18n="Products">Products</div>
+              </a>
+
+              <ul class="menu-sub">
+                <li class="menu-item">
+                  <a href="{{ route('admin.products.create') }}" class="menu-link">
+                    <div data-i18n="Create Product">Create Product</div>
+                  </a>
+                </li>
+                <li class="menu-item">
+                  <a href="{{ route('admin.products.index') }}" class="menu-link">
+                    <div data-i18n="Product List">Product List</div>
+                  </a>
+                </li>
+
+              </ul>
+            </li>
             <!-- Category -->
             <li class="menu-item">
               <a href="javascript:void(0);" class="menu-link menu-toggle">

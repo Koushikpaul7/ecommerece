@@ -42,6 +42,14 @@ class CategoryController extends Controller
         return redirect()->route('admin.categories.index')->with('success', 'Category created successfully.');
     }
 
+    public function toggleStatus(Category $category)
+{
+    $category->status = !$category->status;
+    $category->save();
+
+    return back()->with('success', 'Category status updated!');
+}
+
     /**
      * Display the specified resource.
      */

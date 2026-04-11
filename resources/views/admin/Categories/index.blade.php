@@ -12,6 +12,7 @@
                 <thead>
                     <tr>
                         <th>Name</th>
+                        <th>Status</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
@@ -20,6 +21,20 @@
                     <tr>
                         <td><i class="fab fa-angular fa-lg text-danger me-3"></i> <strong>{{ $category->name ?? ''
                                 }}</strong></td>
+                                <td>
+                            <form action="{{ route('admin.categories.toggleStatus', $category->id) }}" method="POST" id="status-form-{{ $category->id }}" style="display:inline;">
+                                @csrf
+                                @method('PATCH')
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" role="switch"
+                                        id="switch-{{ $category->id }}" {{ $category->status ? 'checked' : '' }}
+                                        onchange="document.getElementById('status-form-{{ $category->id }}').submit();" />
+                                    <label class="form-check-label" for="switch-{{ $category->id }}">
+                                        {{ $category->status ? 'Active' : 'Inactive' }}
+                                    </label>
+                                </div>
+                            </form>
+                        </td>
                         
                         <td>
                             <a href="{{ route('admin.categories.edit', $category->id) }}" class="btn btn-primary btn-sm">Edit</a>

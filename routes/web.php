@@ -4,22 +4,49 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BannerController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\AdminUserController;
+use App\Http\Controllers\CartController;
+use App\Http\Controllers\FrontendController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', function () {
-    return view('welcome');
-});
+
+// frontend route
+Route::get('/', [FrontendController::class, 'index'])->name('frontend.index');
+// product list page
+Route::get('/productList', [FrontendController::class, 'productList'])->name('frontend.productList');
+// product detail page
+Route::get('/productDetails/{slug}', [FrontendController::class, 'productDetails'])->name('frontend.productDetails');
 
 
 
 
 Route::get('/login',[AuthController::class,'Showlogin'])->name('login');
-Route::post('/login',[AuthController::class,'login'])->name('login.submit');
-Route::post('/logout',[AuthController::class,'logout'])->name('logout');
+Route::post('/login',[AuthController::class,'adminLogin'])->name('login.submit');
+Route::post('/admin/logout',[AuthController::class,'adminLogout'])->name('admin.logout');
+
+// user registration routes
+Route::get('/register', [AuthController::class, 'showRegistrationForm'])->name('register');
+Route::post('/register', [AuthController::class, 'register'])->name('register.submit');
+
+// This replaces or works alongside your existing login route
+Route::get('/user/login', [AuthController::class, 'showUserLogin'])->name('user.login');
+Route::post('/user/login', [AuthController::class, 'userLogin'])->name('user.login.submit');
+Route::post('/user/logout', [AuthController::class, 'userLogout'])->name('user.logout');
+
+// add to cart
+Route::middleware(['auth'])->group(function () {
+    Route::post('/addToCart/{product}', [CartController::class, 'addToCart'])->name('cart.add');
+    Route::get('/cart', [CartController::class, 'showCart'])->name('frontend.cartpage');
+    // UPDATE and DELETE routes for cart items can be added here
+    Route::post('/cart/update', [CartController::class, 'updateCart'])->name('cart.update');
+    Route::post('/cart/remove/{cart}', [CartController::class, 'removeFromCart'])->name('cart.remove');
+    Route::delete('/cart/clear', [CartController::class, 'clearCart'])->name('cart.clear');
+});
+
 
 // Admin Dashboard Route
 
-Route::middleware(['auth','admin'])->prefix('admin')->group(function () {
+Route::middleware(['auth:admin','admin'])->prefix('admin')->group(function () {
     Route::get('/dashboard', function () {
         return view('admin.dashboard');
     })->name('admin.dashboard');
@@ -56,4 +83,17 @@ Route::middleware(['auth','admin'])->prefix('admin')->group(function () {
         'destroy' => 'admin.products.destroy',
     ]);
     Route::patch('/products/{product}/toggle-status', [ProductController::class, 'toggleStatus'])->name('admin.products.toggleStatus');
+
+    Route::middleware(['superadmin'])->group(function () {
+        Route::resource('users', AdminUserController::class)->names([
+            'index' => 'admin.users.index',
+            'create' => 'admin.users.create',
+            'store' => 'admin.users.store',
+            'show' => 'admin.users.show',
+            'edit' => 'admin.users.edit',
+            'update' => 'admin.users.update',
+            'destroy' => 'admin.users.destroy',
+        ]);
+    });
+    // List of products with low stock
 });

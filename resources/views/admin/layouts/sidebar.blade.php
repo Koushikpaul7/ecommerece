@@ -141,6 +141,29 @@
 
               </ul>
             </li>
+            {{-- super admin  menu --}}
+           @if(Auth::guard('admin')->user()->role == 'superadmin')
+            <li class="menu-item">
+              <a href="javascript:void(0);" class="menu-link menu-toggle">
+                <i class="menu-icon tf-icons bx bx-user"></i>
+                <div data-i18n="Users">Users</div>
+              </a>
+
+              <ul class="menu-sub">
+                <li class="menu-item">
+                  <a href="{{ route('admin.users.index') }}" class="menu-link">
+                    <div data-i18n="User List">User List</div>
+                  </a>
+                </li>
+                <li class="menu-item">
+                  <a href="{{ route('admin.users.create') }}" class="menu-link">
+                    <div data-i18n="Create User">Create User</div>
+                  </a>
+                </li>
+
+              </ul>
+            </li>
+            @endif
 
           </ul>
         </aside>

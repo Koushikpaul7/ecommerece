@@ -16,11 +16,12 @@ class AdminMiddleware
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if(Auth::check() && Auth::user()->role == 'admin'){
+        if (Auth::guard('admin')->check() && in_array(Auth::guard('admin')->user()->role, ['admin', 'superadmin'])) {
             return $next($request);
         }
+
         return redirect(route('login'))->withErrors([
-            'email'=>'You do not have admin access.',
+            'email' => 'You do not have admin access.',
         ]);
     }
 }

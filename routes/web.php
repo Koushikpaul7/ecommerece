@@ -6,7 +6,9 @@ use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\AdminUserController;
 use App\Http\Controllers\CartController;
+use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\FrontendController;
+use App\Http\Controllers\OrderController;
 use Illuminate\Support\Facades\Route;
 
 
@@ -41,6 +43,17 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/cart/update', [CartController::class, 'updateCart'])->name('cart.update');
     Route::post('/cart/remove/{cart}', [CartController::class, 'removeFromCart'])->name('cart.remove');
     Route::delete('/cart/clear', [CartController::class, 'clearCart'])->name('cart.clear');
+
+    // checkout routes
+    Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.index');
+    Route::post('/place-order', [CheckoutController::class, 'placeOrder'])->name('order.place');
+    Route::get('/order-success', function() {
+        return view('frontend.order_success');
+    })->name('frontend.order.success');
+    // user order history route
+    Route::get('/my-orders', [FrontendController::class, 'myOrders'])->name('user.orders');
+    Route::patch('/my-orders/{order}/cancel', [FrontendController::class, 'cancelOrder'])->name('user.orders.cancel');
+    Route::post('/my-orders/{order}/reorder', [FrontendController::class, 'reorder'])->name('user.orders.reorder');
 });
 
 
@@ -83,6 +96,11 @@ Route::middleware(['auth:admin','admin'])->prefix('admin')->group(function () {
         'destroy' => 'admin.products.destroy',
     ]);
     Route::patch('/products/{product}/toggle-status', [ProductController::class, 'toggleStatus'])->name('admin.products.toggleStatus');
+
+    // order management routes
+    Route::get('/orders', [OrderController::class, 'index'])->name('admin.orders.index');
+    Route::get('/orders/{order}', [OrderController::class, 'show'])->name('admin.orders.show');
+    Route::patch('/orders/{order}/status', [OrderController::class, 'updateStatus'])->name('admin.orders.updateStatus');
 
     Route::middleware(['superadmin'])->group(function () {
         Route::resource('users', AdminUserController::class)->names([

@@ -70,7 +70,7 @@
                             <div class="customer-ct content">
                                 <ul class="links">
                                     <li class="first">
-                                        <a class="top-link-myaccount" title="My Account" href="#">My Account</a>
+                                        <a class="top-link-myaccount" title="My Orders" href="{{ auth('web')->check() ? route('user.orders') : route('user.login') }}">My Orders</a>
                                     </li>
                                     <li>
                                         <a class="top-link-wishlist" title="My Wishlist" href="#">My Wishlist</a>
@@ -80,6 +80,9 @@
                                     </li>
                                     @auth('web')
                                     {{-- Show this if logged in --}}
+                                    <li>
+                                        <a class="top-link-myaccount" title="My Orders" href="{{ route('user.orders') }}">Track My Orders</a>
+                                    </li>
                                     <li>
                                         <span class="me-3">Welcome, {{ Auth::guard('web')->user()->name }}</span>
                                         <a href="{{ route('user.logout') }}"
@@ -797,71 +800,40 @@
                                             <div class="block-content content">
                                                 <div class="block-inner">
                                                     <ol id="cart-sidebar" class="mini-products-list">
+                                                        @foreach($cartItems as $item)
                                                         <li class="item odd">
-                                                            <a class="product-image" title="Modular Modern"
-                                                                href="detail.html">
-                                                                <img alt="" src="{{ asset('images/products/1.jpg') }}">
+                                                            <a class="product-image" title="{{ $item->product->name }}"
+                                                                href="{{ route('frontend.productDetails', $item->product->id) }}">
+
+                                                                <img style="width: 100px"
+                                                                    alt="{{ $item->product->name }}"
+                                                                    src="{{ asset($item->product->image) }}">
                                                             </a>
                                                             <div class="product-details">
                                                                 <a class="btn-remove"
                                                                     onclick="return confirm('Are you sure you would like to remove this item from the shopping cart?');"
                                                                     title="Remove This Item" href="#">Remove This
                                                                     Item</a>
-                                                                <a class="btn-edit" title="Edit item" href="#">Edit
-                                                                    item</a>
+
                                                                 <p class="product-name">
-                                                                    <a href="detail.html">Modular Modern</a>
+                                                                    <a
+                                                                        href="{{ route('frontend.productDetails', $item->product->id) }}">{{
+                                                                        $item->product->name }}</a>
                                                                 </p>
                                                                 <!-- <strong>1</strong>
                                                                             x -->
-                                                                <span class="price">$ 540.00</span>
+                                                                <span class="price">${{
+                                                                    number_format($item->product->price *
+                                                                    $item->quantity, 2) }}</span>
                                                             </div>
                                                         </li>
-                                                        <li class="item odd">
-                                                            <a class="product-image" title="Modular Modern"
-                                                                href="detail.html">
-                                                                <img alt="" src="{{ asset('images/products/22.jpg') }}">
-                                                            </a>
-                                                            <div class="product-details">
-                                                                <a class="btn-remove"
-                                                                    onclick="return confirm('Are you sure you would like to remove this item from the shopping cart?');"
-                                                                    title="Remove This Item" href="#">Remove This
-                                                                    Item</a>
-                                                                <a class="btn-edit" title="Edit item" href="#">Edit
-                                                                    item</a>
-                                                                <p class="product-name">
-                                                                    <a href="detail.html">Modular Modern</a>
-                                                                </p>
-                                                                <!-- <strong>1</strong>
-                                                                            x -->
-                                                                <span class="price">$ 540.00</span>
-                                                            </div>
-                                                        </li>
-                                                        <li class="item last even">
-                                                            <a class="product-image" title="Modular Modern"
-                                                                href="detail.html">
-                                                                <img alt="" src="{{ asset('images/products/3.jpg') }}">
-                                                            </a>
-                                                            <div class="product-details">
-                                                                <a class="btn-remove"
-                                                                    onclick="return confirm('Are you sure you would like to remove this item from the shopping cart?');"
-                                                                    title="Remove This Item" href="#">Remove This
-                                                                    Item</a>
-                                                                <a class="btn-edit" title="Edit item"
-                                                                    href="detail.html">Edit item</a>
-                                                                <p class="product-name">
-                                                                    <a href="#">Modular Modern</a>
-                                                                </p>
-                                                                <!--  <strong>1</strong>
-                                                                            x -->
-                                                                <span class="price">$ 540.00</span>
-                                                            </div>
-                                                        </li>
+                                                        @endforeach
                                                     </ol>
                                                     <p class="cart-subtotal">
                                                         <span class="label">Total:</span>
-                                                        <span class="price">$ 540.00</span>
+                                                        <span class="price">${{ number_format($cartTotal, 2) }}</span>
                                                     </p>
+
 
                                                     <div class="actions">
                                                         <a class="button">

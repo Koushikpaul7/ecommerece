@@ -26,12 +26,21 @@ class AppServiceProvider extends ServiceProvider
 
         View::composer('frontend.partials.header', function ($view) {
             $cartCount = 0;
+            $cartItems = collect();
+            $cartTotal = 0;
 
             if (auth('web')->check()) {
-                $cartCount = Cart::where('user_id', auth('web')->id())->sum('quantity');
+                $cartItems = Cart::with('product')
+                    ->where('user_id', auth('web')->id())
+                    ->get();
+
+                $cartCount = $cartItems->sum('quantity');
+                $cartTotal = $cartItems->sum(function ($item) {
+                    return $item->quantity * $item->price;
+                });
             }
 
-            $view->with('cartCount', $cartCount);
+            $view->with(compact('cartCount', 'cartItems', 'cartTotal'));
         });
     }
 }

@@ -162,7 +162,7 @@
                                     <span class="text3">GRAND TOTAL:</span>
                                     <span class="text4">${{ number_format($total, 2) }}</span>
                                 </h3>
-                                <span class="style-bd">Proceed to checkout</span>
+                                <a href="{{ route('checkout.index') }}"><span class="style-bd">Proceed to checkout</span></a>
                                 <p class="checkout">Checkout with Multiple Addresses</p>
                             </div>
                         </form>

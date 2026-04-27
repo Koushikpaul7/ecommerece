@@ -3,9 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Models\Banner;
+use App\Models\Cart;
 use App\Models\Category;
+use App\Models\Order;
 use App\Models\Product;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class FrontendController extends Controller
 {
@@ -54,5 +58,73 @@ class FrontendController extends Controller
         ->get();
         return view('frontend.productDetails', compact('product', 'relatedProducts'));
 
+    }
+    public function myOrders()
+    {
+        $orders = Order::with(['orderItems.product'])
+            ->where('user_id', Auth::id())
+            ->latest()
+            ->get();
+
+        return view('frontend.myOrders', compact('orders'));
+    }
+
+    public function cancelOrder(Order $order)
+    {
+        abort_unless($order->user_id === Auth::id(), 403);
+
+        if (! $order->canBeCancelledByUser()) {
+            return back()->with('error', 'This order can no longer be cancelled.');
+        }
+
+        $order->update(['status' => 'cancelled']);
+
+        return back()->with('success', 'Your order has been cancelled successfully.');
+    }
+
+    public function reorder(Order $order)
+    {
+        abort_unless($order->user_id === Auth::id(), 403);
+
+        if (! $order->canBeReorderedByUser()) {
+            return back()->with('error', 'Only delivered orders can be reordered.');
+        }
+
+        $itemsAdded = 0;
+
+        DB::transaction(function () use ($order, &$itemsAdded) {
+            $order->loadMissing('orderItems.product');
+
+            foreach ($order->orderItems as $item) {
+                $product = $item->product;
+
+                if (! $product || ! $product->status || $product->quantity < 1) {
+                    continue;
+                }
+
+                $cartItem = Cart::where('user_id', Auth::id())
+                    ->where('product_id', $product->id)
+                    ->first();
+
+                if ($cartItem) {
+                    $cartItem->increment('quantity', $item->quantity);
+                } else {
+                    Cart::create([
+                        'user_id' => Auth::id(),
+                        'product_id' => $product->id,
+                        'quantity' => $item->quantity,
+                        'price' => $product->price,
+                    ]);
+                }
+
+                $itemsAdded++;
+            }
+        });
+
+        if ($itemsAdded === 0) {
+            return back()->with('error', 'No available products from this order could be added to your cart.');
+        }
+
+        return redirect()->route('frontend.cartpage')->with('success', 'Order items were added to your cart for reorder.');
     }
 }

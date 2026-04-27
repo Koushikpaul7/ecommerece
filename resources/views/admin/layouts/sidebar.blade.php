@@ -141,6 +141,12 @@
 
               </ul>
             </li>
+            <li class="menu-item">
+              <a href="{{ route('admin.orders.index') }}" class="menu-link">
+                <i class="menu-icon tf-icons bx bx-receipt"></i>
+                <div data-i18n="Orders">Orders</div>
+              </a>
+            </li>
             {{-- super admin  menu --}}
            @if(Auth::guard('admin')->user()->role == 'superadmin')
             <li class="menu-item">

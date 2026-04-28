@@ -842,7 +842,7 @@
                                                             </span>
                                                         </a>
                                                         <a class="button gfont go-to-cart"
-                                                            href="index3-shoppingcart.html">Go to cart</a>
+                                                            href="{{route('frontend.cartpage')}}">Go to cart</a>
                                                     </div>
 
                                                 </div>

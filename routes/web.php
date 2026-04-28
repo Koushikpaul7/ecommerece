@@ -36,7 +36,7 @@ Route::post('/user/login', [AuthController::class, 'userLogin'])->name('user.log
 Route::post('/user/logout', [AuthController::class, 'userLogout'])->name('user.logout');
 
 // add to cart
-Route::middleware(['auth'])->group(function () {
+Route::middleware(['auth:web'])->group(function () {
     Route::post('/addToCart/{product}', [CartController::class, 'addToCart'])->name('cart.add');
     Route::get('/cart', [CartController::class, 'showCart'])->name('frontend.cartpage');
     // UPDATE and DELETE routes for cart items can be added here

@@ -15,6 +15,12 @@ return Application::configure(basePath: dirname(__DIR__))
             'admin' => App\Http\Middleware\AdminMiddleware::class,
             'superadmin' => App\Http\Middleware\SuperAdminMiddleware::class
         ]);
+
+        $middleware->redirectGuestsTo(function ($request) {
+            return $request->is('admin') || $request->is('admin/*')
+                ? route('login')
+                : route('user.login');
+        });
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //
